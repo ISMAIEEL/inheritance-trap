@@ -9,7 +9,6 @@ caused by inherited folder permissions and publicly exposed API keys.
 This script uses ONLY dummy keys, file IDs, and metadata examples.
 
 Author: Haitham A. E. ISMAIEEL
-Contact: aei.ismaieel@gmail.com
 License: MIT
 """
 
