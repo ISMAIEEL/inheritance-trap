@@ -51,9 +51,31 @@ All figures are redacted to mask SPII and sensitive tokens
   <img width="1366" height="664" alt="5" src="https://github.com/user-attachments/assets/5d45d656-5821-43e9-ae7f-cf7b7ab5fc38" />
 
 ---
-
 ## Technical Appendix
-See [`TECHNICAL-APPENDIX.md`](TECHNICAL-APPENDIX.md) for a sanitized PoC flow, redaction rules, and non-actionable pseudocode.
+
+This repository contains two **safe, non-actionable** example scripts demonstrating the concepts discussed in the research.  
+They are intended for **educational purposes only** and use only synthetic / dummy data.
+
+### Scripts
+
+1. **`scripts/pseudocode_sanitized_scanner.py`**  
+   - Shows pseudocode for how an automated scanner might query cloud storage APIs to detect inherited permissions and exposed metadata.
+   - No live API calls, credentials, or identifiers are included.
+
+2. **`scripts/spii_exposure_scanner.py`**  
+   - Simulates SPII exposure detection using dummy API keys, file IDs, parent folder IDs, and metadata responses.
+   - Highlights key risk flags such as:
+     - `inheritedPermissionsDisabled: false`
+     - `writersCanShare: true`
+   - Demonstrates how attackers could **theoretically** identify exposure without user error, authentication, or direct collaboration.
+
+Both scripts are **heavily redacted** and are provided to help vendors, researchers, and cloud ecosystem stakeholders understand the systemic risk.
+
+---
+
+**Disclaimer:**  
+Do not use these scripts against live systems without proper authorization.  
+This research is intended to **inform and improve security practices** across cloud storage ecosystems.
 
 ---
 
