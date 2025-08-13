@@ -1,99 +1,97 @@
 # The Inheritance Trap — Sanitized Research
 
-**Analyzing a potential cloud security behavior:** a researcher’s perspective on inherited folder permissions, metadata exposure, and why small design choices matter.
+**Summary:**  
+This repository documents research into a systemic permission-inheritance pattern in cloud storage ecosystems — observed in Google Drive and potentially relevant elsewhere — where files nested inside publicly shared folders can expose sensitive metadata without the owner’s direct action.  
+This is **not a user mistake**; the exposure occurs through recursive folder permissions and certain API metadata behaviors.  
+All materials here are sanitized — no live credentials, emails, or file links.
 
-- Medium write-up (redacted): https://medium.com/@aei.ismaieel/the-inheritance-trap-how-cloud-folder-structures-can-silently-expose-metadata-at-scale-c6716bc56ac7  
-- Contact: aei.ismaieel@gmail.com
+---
+
+## Quick Links
+- **Medium write-up:** [Read the article](https://medium.com/@aei.ismaieel/the-inheritance-trap-how-cloud-folder-structures-can-silently-expose-metadata-at-scale-c6716bc56ac7)
+- **Contact:** aei.ismaieel@gmail.com
 
 ---
 
 ## Executive Summary
-This repository documents a systemic permission-inheritance pattern in cloud storage ecosystems—observed in Google Drive and plausibly relevant elsewhere—where files nested inside publicly shared folders can expose sensitive metadata to unauthenticated API calls made with a valid API key. Exposed fields may include owner display name and email (SPII), filenames/types, timestamps, web view/download links, and permission flags.
+When a folder is public in a cloud storage ecosystem, any files inside can inherit that visibility unless explicitly overridden.  
+For affected services, unauthenticated API calls made with any valid API key (including leaked unrestricted ones) may return:
 
-This repo contains **sanitized** figures and excerpts. It does **not** include live emails, API keys, or active file links.
+- Owner display name and email (SPII)
+- File names, types, and extensions
+- Created/modified timestamps
+- Web view and download links
+- Permission flags and parent folder IDs
+
+Attackers could automate harvesting at scale, and modern AI tooling can accelerate scanning and analysis.
 
 ---
 
 ## Why This Is Not a User Mistake
-- Owners often **did not explicitly share** the file; exposure occurs via **recursive folder inheritance**.
-- There is **no clear UI banner/warning** indicating a file is public due to parent settings.
-- The behavior is **exploitable without authentication** or direct collaboration with the owner.
-- The same exposure path works with **any valid API key** (newly registered or leaked/unrestricted).
+- Owners never explicitly shared the affected files.
+- No UI warning indicates that a file is public due to a parent folder’s settings.
+- No audit trail flags inherited public access.
+- Exploitable without authentication or collaboration from the file owner.
 
 ---
 
 ## Core Observation (Sanitized)
-When a file’s `inheritedPermissionsDisabled` is `false` and the parent folder is public, the Drive API `files.get` endpoint may return metadata using any valid API key. While one can register a new key, the prevalence of **publicly exposed keys** makes automated harvesting easier. With modern AI tooling, attackers can generate adaptive collection scripts that scale quickly.
+If a file’s `inheritedPermissionsDisabled` is `false` and its parent folder is public, the Drive API `files.get` endpoint (or an equivalent in other ecosystems) can return sensitive metadata with any valid API key.  
+Publicly exposed keys in code repositories make this trivial to scale.
 
 ---
 
 ## Figures (Sanitized)
-All figures are redacted to mask SPII and sensitive tokens 
+All figures are fully redacted to mask SPII and sensitive tokens:
 
- **Figure 1 — API Response Showing Metadata**
-    
-  <img width="1093" height="532" alt="1" src="https://github.com/user-attachments/assets/247ea64c-9548-4eb7-b586-efccfe26bfe7" />
+- **Figure 1** — API Response Showing Metadata
+  <img width="1093" height="532" alt="1" src="https://github.com/user-attachments/assets/00099bf1-2ed3-405b-b8f8-741ff761f941" />
 
- **Figure 2 — Parent Folder Confirming Public Sharing (shared: true)**
-   
- <img width="1308" height="628" alt="2" src="https://github.com/user-attachments/assets/2aa5e95a-0d55-4548-b03e-9789f82f93fc" />
-
- **Figure 3 — Permission Flags (e.g., writersCanShare: true; inheritedPermissionsDisabled: false)**
-  
- <img width="1366" height="664" alt="3" src="https://github.com/user-attachments/assets/f3c97652-1e9e-4891-af5e-276f81cdfcd2" />
-
- **Figure 4 — Mass PII, PSII and Metadata Tree (Sanitized)**
-
-  <img width="1323" height="548" alt="4" src="https://github.com/user-attachments/assets/cd63ea11-7aee-4410-bbe4-8318475fa99d" />
-
- **Figure 5 — Access Scope Example (Sanitized)**
+- **Figure 2** — Parent Folder Confirming Public Sharing (`shared: true`)
+  <img width="1308" height="628" alt="2" src="https://github.com/user-attachments/assets/c062bdd4-2798-4059-83c6-18d4e259435f" />
  
-  <img width="1366" height="664" alt="5" src="https://github.com/user-attachments/assets/5d45d656-5821-43e9-ae7f-cf7b7ab5fc38" />
+- **Figure 3** — Permission Flags (`writersCanShare: true`; `inheritedPermissionsDisabled: false`)
+  <img width="1366" height="664" alt="3" src="https://github.com/user-attachments/assets/c5c34ac5-378e-48e7-89be-4b2c4e9408e7" />
+ 
+- **Figure 4** — Full Metadata Tree   
+<img width="1323" height="548" alt="4" src="https://github.com/user-attachments/assets/3c4c3500-1140-47cc-aac3-51755d109579" />
 
 ---
-## Technical Appendix 
 
-This repository contains two **safe, non-actionable** example scripts demonstrating the concepts discussed in the research.  
-They are intended for **educational purposes only** and use only synthetic / dummy data.
+## Recommendations
 
-### Scripts
+### For Cloud Ecosystem Vendors
+- Display clear UI banners for inherited public access.
+- Mask owner SPII unless explicitly shared.
+- Restrict sensitive metadata in unauthenticated API calls.
+- Offer bulk audit/remediation tools for inherited exposures.
+- Detect and alert on leaked API keys.
 
-1. **`scripts/pseudocode_sanitized_scanner.py`**  
-   - Shows pseudocode for how an automated scanner might query cloud storage APIs to detect inherited permissions and exposed metadata.
-   - No live API calls, credentials, or identifiers are included.
-
-2. **`scripts/spii_exposure_scanner.py`**  
-   - Simulates SPII exposure detection using dummy API keys, file IDs, parent folder IDs, and metadata responses.
-   - Highlights key risk flags such as:
-     - `inheritedPermissionsDisabled: false`
-     - `writersCanShare: true`
-   - Demonstrates how attackers could **theoretically** identify exposure without user error, authentication, or direct collaboration.
-
-Both scripts are **heavily redacted** and are provided to help vendors, researchers, and cloud ecosystem stakeholders understand the systemic risk.
+### For Users & Admins
+- Audit folder trees for inherited exposure.
+- Restrict & rotate API keys, scan repos for leaks.
+- Use DLP tools to detect sensitive content exposure.
 
 ---
+
+## Technical Appendix
+This repository contains two **safe, non-actionable** example scripts in `/scripts`:
+
+- **`cloud_metadata_inheritance_scanner.py`** — Pseudocode for scanning public folders and identifying inherited permissions.  
+- **`spii_exposure_detector.py`** — Simulates detection of exposed SPII fields (e.g., `inheritedPermissionsDisabled: false`) using dummy data.
 
 **Disclaimer:**  
-Do not use these scripts against live systems without proper authorization.  
-This research is intended to **inform and improve security practices** across cloud storage ecosystems.
+Do not run these scripts against live systems without explicit authorization.  
+This research is intended for security awareness and vendor collaboration.
 
 ---
 
 ## Responsible Communication (Summary)
-- Reported: 2025-08-01 (Google VRP)
-- Outcome: reviewed; classified under current design expectations
-- Goal of publication: inform users and vendors; encourage improvements that reduce unintended SPII exposure across the ecosystem
-
-See [`appendix/vendor_communication_summary.md`](appendix/vendor_communication_summary.md) for a concise timeline (redacted).
+- **Reported:** 2025-08-01  
+- **Outcome:** Reviewed; classified under current design expectations.  
+- **Goal:** Inform ecosystem vendors and encourage security improvements.
 
 ---
 
-## License & Use
-- Research is published under the MIT License (see [`LICENSE`](LICENSE)).
-- **No mass scanning. No targeting of individuals.** See [`SECURITY.md`](SECURITY.md) and [`DISCLAIMER.md`](DISCLAIMER.md).
-
----
-
-## Links
-- Medium: https://medium.com/@aei.ismaieel/the-inheritance-trap-how-cloud-folder-structures-can-silently-expose-metadata-at-scale-c6716bc56ac7  
-- GitHub repo : [https://github.com/ISMAIEEL/inheritance-trap/new/main](https://github.com/ISMAIEEL/inheritance-trap)
+## License
+Published under the MIT License (see `LICENSE`).
