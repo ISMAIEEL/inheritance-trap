@@ -51,7 +51,7 @@ All figures are redacted to mask SPII and sensitive tokens
   <img width="1366" height="664" alt="5" src="https://github.com/user-attachments/assets/5d45d656-5821-43e9-ae7f-cf7b7ab5fc38" />
 
 ---
-## Technical Appendix
+## Technical Appendix 
 
 This repository contains two **safe, non-actionable** example scripts demonstrating the concepts discussed in the research.  
 They are intended for **educational purposes only** and use only synthetic / dummy data.
