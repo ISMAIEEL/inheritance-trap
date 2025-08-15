@@ -95,3 +95,7 @@ This research is intended for security awareness and vendor collaboration.
 
 ## License
 Published under the MIT License (see `LICENSE`).
+---
+
+### Support
+If you’d like to support future research: see **[SUPPORT.md](./SUPPORT.md)**.
