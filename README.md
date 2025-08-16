@@ -16,7 +16,9 @@ All materials here are sanitized — no live credentials, emails, or file links.
 ## Executive Summary
 
 <img width="1536" height="1024" alt="2" src="https://github.com/user-attachments/assets/3823cb43-2d00-4ed9-b750-103ef52e89b4" />
+
             Silent metadata leakage: when a shared folder exposes more than files — it exposes identities.
+
 
 
 When a folder is public in a cloud storage ecosystem, any files inside can inherit that visibility unless explicitly overridden.  
